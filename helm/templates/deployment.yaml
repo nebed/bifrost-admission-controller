@@ -35,6 +35,11 @@ spec:
           imagePullPolicy: Always
           args:
           - -service-name={{ include "bifrost-admission-controller.fullname" . }}
+          env:
+          - name: POD_NAMESPACE
+            valueFrom:
+              fieldRef:
+                fieldPath: metadata.namespace
           ports:
             - name: http
               containerPort: 8443
