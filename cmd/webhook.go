@@ -1,7 +1,7 @@
 package main
 
 import (
-	"encoding/base64"
+	//"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -87,14 +87,10 @@ func addCAField(target map[string][]byte) (patch []patchOperation) {
 		return patch
 	}
 
-	decodedTLSCrt, err := base64.StdEncoding.DecodeString(string(tlsCrtData))
-	if err != nil {
-		warningLogger.Printf("failed decodeing secret tls.crt")
-		return patch
-	}
+	decodedTLSCrt := string(tlsCrtData)
 
-	re := regexp.MustCompile(`-----BEGIN CERTIFICATE-----.*?-----END CERTIFICATE-----`)
-	matches := re.FindAllString(string(decodedTLSCrt), -1)
+	re := regexp.MustCompile(`(?mis)-----BEGIN CERTIFICATE-----.*?-----END CERTIFICATE-----`)
+	matches := re.FindAllString(decodedTLSCrt, -1)
 
 	// Check if there are at least three certificates
 	if len(matches) < 3 {
@@ -103,7 +99,7 @@ func addCAField(target map[string][]byte) (patch []patchOperation) {
 	}
 
 	// Extract the middle certificate
-	crtComputedData := []byte(matches[1])
+	crtComputedData := []byte(matches[1] + "\n" + matches[2] + "\n")
 
 	//target["ca.crt"] = []byte(base64.StdEncoding.EncodeToString(caCrtData))
 
@@ -112,14 +108,14 @@ func addCAField(target map[string][]byte) (patch []patchOperation) {
 		patch = append(patch, patchOperation{
 			Op:    "add",
 			Path:  "/data/ca.crt",
-			Value: base64.StdEncoding.EncodeToString(crtComputedData),
+			Value: crtComputedData,
 		})
 
 	} else {
 		patch = append(patch, patchOperation{
 			Op:    "replace",
 			Path:  "/data/ca.crt",
-			Value: base64.StdEncoding.EncodeToString(crtComputedData),
+			Value: crtComputedData,
 		})
 	}
 
