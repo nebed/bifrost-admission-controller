@@ -79,8 +79,6 @@ func mutationRequired(ignoredList []string, metadata *metav1.ObjectMeta) bool {
 
 func addCAField(target map[string][]byte) (patch []patchOperation) {
 	tlsCrtData, tlsCrtExists := target["tls.crt"]
-	//tlsKeyData, tlsKeyExists := target["tls.key"]
-	//caCrtData, caCrtExists := target["ca.crt"]
 
 	if !tlsCrtExists {
 		warningLogger.Printf("tls.crt or tls.key dont exist")
