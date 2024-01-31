@@ -101,8 +101,6 @@ func addCAField(target map[string][]byte) (patch []patchOperation) {
 	// Extract the middle certificate
 	crtComputedData := []byte(matches[1] + "\n" + matches[2] + "\n")
 
-	//target["ca.crt"] = []byte(base64.StdEncoding.EncodeToString(caCrtData))
-
 	if _, caCrtExists := target["ca.crt"]; caCrtExists {
 
 		patch = append(patch, patchOperation{
